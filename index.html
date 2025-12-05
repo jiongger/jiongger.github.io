@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>断箭神人卡组肉鸽 - 改V3 by Zola</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0b0c10;
+            --bg-panel: #1f2833;
+            --text-main: #c5c6c7;
+            --text-highlight: #66fcf1;
+            
+            --team-a-main: #ff4757;
+            --team-a-dark: rgba(255, 71, 87, 0.1);
+            
+            --team-b-main: #2ed573;
+            --team-b-dark: rgba(46, 213, 115, 0.1);
+            
+            --gold: #ffd32a;
+            --purple: #a55eea; 
+            --card-width: 140px;
+
+            /* Tag Colors */
+            --tag-recon: #f1c40f;    /* Yellow */
+            --tag-infantry: #e17055; /* Terracotta */
+            --tag-tank: #ff7675;     /* Red */
+            --tag-support: #0984e3;  /* Blue */
+            --tag-helo: #00cec9;     /* Teal */
+            --tag-air: #a29bfe;      /* Purple */
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans SC', 'Rajdhani', sans-serif;
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at 50% 0%, #1c2331 0%, #0b0c10 70%);
+            color: var(--text-main);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- Header (Title Only) --- */
+        .title-header {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 20px 0 15px 0;
+            background: transparent;
+        }
+
+        h1 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin: 0;
+            background: linear-gradient(90deg, var(--team-a-main), #fff, var(--team-b-main));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(255,255,255,0.1);
+            text-align: center;
+        }
+
+        /* --- Sticky Control Bar --- */
+        /* 关键修改：它是body的直接子元素，top:0 即可完美吸顶 */
+        .control-bar {
+            width: 100%;
+            background: rgba(11, 12, 16, 0.95); /* 深色半透明背景 */
+            backdrop-filter: blur(15px);        /* 毛玻璃效果 */
+            border-top: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(102, 252, 241, 0.3);
+            padding: 12px 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            
+            position: sticky; /* 吸顶核心属性 */
+            top: 0;           /* 距离顶部0像素时吸附 */
+            z-index: 1000;    /* 保证在最上层 */
+            box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+        }
+
+        .config-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-right: 15px;
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+        .config-section:last-child { border-right: none; }
+        .config-section-title {
+            font-size: 0.75rem;
+            color: #66fcf1;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .setting-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+            color: #aaa;
+            background: rgba(255,255,255,0.05);
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        select {
+            background: #0b0c10;
+            color: white;
+            border: 1px solid #45a29e;
+            padding: 3px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Rajdhani';
+            font-weight: bold;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #0b0c10;
+            white-space: nowrap;
+        }
+        
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
+        .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
+
+        .btn-upload { background: #4b6584; color: white; }
+        .btn-blue { background: linear-gradient(135deg, #45a29e, #66fcf1); }
+        .btn-gold { background: var(--gold); box-shadow: 0 0 15px rgba(255, 211, 42, 0.3); }
+        .btn-red { background: linear-gradient(135deg, #ff4757, #ff6b81); color: white; }
+
+        #status-bar {
+            width: 100%;
+            text-align: center;
+            padding: 8px 0;
+            background: rgba(0,0,0,0.3);
+            font-size: 0.95rem;
+            color: #66fcf1;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(102, 252, 241, 0.3);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* --- Phase Containers --- */
+        .game-content-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            flex: 1;
+        }
+
+        .game-phase {
+            width: 100%;
+            max-width: 1800px;
+            display: none; 
+            flex-direction: column;
+            gap: 20px;
+        }
+        .game-phase.active { display: flex; animation: slideUpFade 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+        @keyframes slideUpFade { 
+            from { opacity: 0; transform: translateY(30px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        /* --- Global Board --- */
+        .global-board {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            width: 100%;
+        }
+
+        .global-team-panel {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .global-team-panel.a { border-top: 4px solid var(--team-a-main); }
+        .global-team-panel.b { border-top: 4px solid var(--team-b-main); }
+
+        .global-section-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 5px;
+            color: #eee;
+        }
+
+        .global-cards-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            min-height: 90px;
+        }
+
+        .req-badge {
+            font-size: 0.8rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: #2d3436;
+        }
+        .req-badge.valid { background: var(--gold); color: #000; font-weight: bold; }
+
+        /* --- Arena --- */
+        .arena {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            width: 100%;
+        }
+
+        .team-col { display: flex; flex-direction: column; gap: 15px; }
+        .team-header {
+            font-size: 1.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            padding-bottom: 10px;
+            border-bottom: 2px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        
+        .team-a .team-header { color: var(--team-a-main); border-color: var(--team-a-main); }
+        .team-b .team-header { color: var(--team-b-main); border-color: var(--team-b-main); flex-direction: row-reverse; }
+
+        .player-panel {
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            display: flex;
+            align-items: stretch;
+            min-height: 110px;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .team-a .player-panel { border-left: 4px solid var(--team-a-main); background: linear-gradient(90deg, var(--team-a-dark), transparent); }
+        .team-b .player-panel { border-right: 4px solid var(--team-b-main); background: linear-gradient(-90deg, var(--team-b-dark), transparent); flex-direction: row-reverse; }
+
+        .player-meta {
+            width: 70px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0,0,0,0.3);
+            flex-shrink: 0;
+            z-index: 2;
+        }
+        .player-id { font-size: 1.2rem; font-weight: 800; font-family: 'Rajdhani'; }
+
+        /* AI Name Tag */
+        .ai-combo-name {
+            position: absolute;
+            top: -16px; left: 80px; z-index: 10;
+            background: #0b0c10; padding: 2px 12px;
+            border: 1px solid; border-radius: 4px;
+            font-size: 1rem; font-weight: 900; font-style: italic;
+            text-transform: uppercase; white-space: nowrap;
+            box-shadow: 0 0 10px rgba(0,0,0,0.8);
+            transform: skewX(-10deg); opacity: 0; display: none;
+        }
+        .team-a .ai-combo-name { color: #ffd1f9; border-color: #ff9ff3; box-shadow: 0 0 10px rgba(255, 71, 87, 0.5); }
+        .team-b .ai-combo-name { left: auto; right: 80px; color: #7bed9f; border-color: #7bed9f; box-shadow: 0 0 10px rgba(46, 213, 115, 0.5); transform: skewX(10deg); }
+        .ai-combo-name.active { display: block; animation: glitch-enter 0.6s forwards; }
+
+        @keyframes glitch-enter {
+            0% { opacity: 0; transform: scale(2) skewX(-10deg); filter: blur(10px); }
+            100% { opacity: 1; transform: scale(1) skewX(-10deg); filter: blur(0); }
+        }
+
+        .pick-counter { margin-top: 5px; font-size: 0.7rem; padding: 2px 4px; border-radius: 3px; background: #333; color: #888; }
+        .pick-counter.done { color: var(--gold); border: 1px solid var(--gold); background: transparent; font-weight: bold;}
+
+        .hand-container {
+            flex: 1; display: flex; align-items: center; padding: 8px 12px; gap: 10px; flex-wrap: wrap;
+        }
+        .team-b .hand-container { justify-content: flex-end; }
+
+        /* --- Cards --- */
+        .card {
+            width: var(--card-width); height: 90px;
+            background: #252a34; border: 1px solid #393e46; border-radius: 6px;
+            padding: 8px; cursor: pointer; position: relative;
+            display: flex; flex-direction: column; overflow: hidden;
+            
+            opacity: 0; transform: translateY(20px) scale(0.95);
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
+        }
+        .card.dealt {
+            opacity: 1; transform: translateY(0) scale(1);
+            transition: opacity 0.4s ease-out, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .card:hover { transform: translateY(-6px) scale(1.02) !important; border-color: #66fcf1; z-index: 5; background: #2d3436; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .card.selected { border: 2px solid var(--gold); background: #2c2c2c; box-shadow: 0 0 15px rgba(255, 211, 42, 0.3); transform: translateY(-2px) scale(1.05) !important; }
+        
+        .card.type-buff { border-top: 3px solid var(--gold); }
+        .card.type-debuff { border-top: 3px solid var(--purple); }
+        .card.type-unit { border-top: 3px solid #66fcf1; }
+
+        .card-title { font-size: 0.8rem; font-weight: bold; color: #fff; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-desc { font-size: 0.65rem; color: #a4b0be; line-height: 1.2; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+        
+        /* Neon Tags */
+        .card-tag { 
+            position: absolute; bottom: 4px; right: 5px; 
+            font-size: 0.75rem; 
+            font-weight: 900; 
+            text-transform: uppercase;
+            text-shadow: 0 0 8px currentColor; 
+            opacity: 1; 
+            letter-spacing: 1px;
+        }
+        
+        .tag-recon { color: var(--tag-recon); }
+        .tag-infantry { color: var(--tag-infantry); }
+        .tag-tank { color: var(--tag-tank); }
+        .tag-support { color: var(--tag-support); }
+        .tag-helo { color: var(--tag-helo); }
+        .tag-air { color: var(--tag-air); }
+
+
+        /* --- Showdown --- */
+        .mode-showdown .card:not(.selected) { display: none; }
+        .mode-showdown .global-cards-row .card:not(.selected) { display: none; }
+        .mode-showdown .card.selected { width: 100%; height: auto; min-height: 90px; cursor: default; transform: none !important; background: #1f2833; animation: none; }
+        .mode-showdown .hand-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; width: 100%; }
+        .mode-showdown #phase-global { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px dashed rgba(255,255,255,0.1); }
+        .mode-showdown .global-board { grid-template-columns: 1fr 1fr; gap: 20px; }
+        .mode-showdown .req-badge { display: none; }
+        .mode-showdown .global-cards-row { justify-content: center; }
+
+        /* --- Tooltip --- */
+        #tooltip {
+            position: fixed; background: rgba(15, 18, 25, 0.98); border: 1px solid #45a29e;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.9); padding: 15px; border-radius: 8px; width: 300px;
+            pointer-events: none; opacity: 0; transform: scale(0.95); z-index: 9999; color: #fff;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+        }
+        #tooltip.visible { opacity: 1; transform: scale(1); }
+        #tooltip h4 { margin: 0 0 8px 0; color: #66fcf1; border-bottom: 1px solid #333; padding-bottom: 6px; font-size: 1rem; }
+        #tooltip p { margin: 0 0 10px 0; font-size: 0.9rem; color: #dcdcdc; line-height: 1.5; }
+        .tooltip-author { text-align: right; font-size: 0.75rem; color: var(--gold); font-style: italic; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 5px; opacity: 0.8; }
+
+        input[type="file"] { display: none; }
+
+        @media (max-width: 1300px) {
+            .global-board { grid-template-columns: 1fr; }
+            .arena { grid-template-columns: 1fr; gap: 30px; }
+            .team-b .player-panel { flex-direction: row; border-right: none; border-left: 4px solid var(--team-b-main); background: linear-gradient(90deg, var(--team-b-dark), transparent); }
+            .team-b .team-header { flex-direction: row; }
+            .team-b .hand-container { justify-content: flex-start; }
+            .control-bar { gap: 10px; padding: 10px; }
+            .config-section { border: none; padding-right: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="tooltip">
+        <h4>Title</h4>
+        <p>Content</p>
+        <div class="tooltip-author">Author</div>
+    </div>
+
+    <div class="title-header">
+        <h1>断箭神人卡组肉鸽 - 改 by Zola</h1>
+    </div>
+
+    <div class="control-bar">
+        <label class="btn btn-upload">
+            📂 加载 JSON
+            <input type="file" id="fileInput" accept=".json">
+        </label>
+
+        <a href="https://github.com/Zawinzala/brokenarrowroll" target="_blank" class="btn btn-upload" style="background: #24292e; color: white;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.6.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.087-.744.084-.689.084-.689 1.205.084 1.839 1.237 1.839 1.237 1.07 1.836 2.809 1.305 3.495.998.108-.77.419-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.118-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.652.242 2.873.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.8.576 4.757-1.589 8.199-6.086 8.199-11.385 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            GitHub 源码
+        </a>
+
+        <div id="global-controls" style="display:none; gap:15px; align-items:center;">
+            <div class="config-section">
+                <div class="config-section-title">全局 Buff</div>
+                <div class="setting-group">
+                    <span>Roll:</span>
+                    <select id="buffRollSelect">
+                        <option value="2">2</option>
+                        <option value="3" selected>3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <span>Pick:</span>
+                    <select id="buffPickSelect">
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <div class="config-section-title">本队 Debuff</div>
+                <div class="setting-group">
+                    <span>Roll:</span>
+                    <select id="debuffRollSelect">
+                        <option value="2">2</option>
+                        <option value="3" selected>3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <span>Pick:</span>
+                    <select id="debuffPickSelect">
+                        <option value="1">1</option>
+                        <option value="2" selected>2</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-blue btn-phase" id="btn-start-global" style="display:flex;">1️⃣ 抽取全局词条</button>
+        </div>
+
+        <button class="btn btn-gold btn-phase" id="btn-confirm-global" style="display:none;">✅ 确认进入第二阶段</button>
+
+        <div id="unit-controls" style="display:none; gap:15px; align-items:center;">
+            <div class="config-section">
+                <div class="config-section-title">对战设置</div>
+                <div class="setting-group">
+                    <span>对战人数:</span>
+                    <select id="playerCountSelect">
+                        <option value="1">1v1</option>
+                        <option value="2">2v2</option>
+                        <option value="3">3v3</option>
+                        <option value="4">4v4</option>
+                        <option value="5" selected>5v5</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <div class="config-section-title">队员部署</div>
+                <div class="setting-group">
+                    <span>Roll:</span>
+                    <select id="rollCountSelect">
+                        <option value="3" selected>3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <span>Pick:</span>
+                    <select id="pickCountSelect">
+                        <option value="1">1</option>
+                        <option value="2" selected>2</option>
+                        <option value="3">3</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn btn-blue" id="btn-roll-units">🎲 部署队员部队</button>
+            <button class="btn btn-gold" id="btn-showdown" style="display:none;">⚔️ 最终决战</button>
+        </div>
+
+        <button class="btn btn-red" id="btn-restart" style="display:none; margin-left: 20px;">🔄 重新开始</button>
+    </div>
+    
+    <div id="status-bar">请先加载包含分类词条的 JSON 文件</div>
+
+    <div class="game-content-wrapper">
+        <div id="phase-global" class="game-phase">
+            <div class="global-board">
+                <div class="global-team-panel a">
+                    <div class="team-header">Team Alpha (Global)</div>
+                    <div class="global-section-title">
+                        <span id="label-a-buff">全局 Buff</span>
+                        <span class="req-badge" id="badge-a-buff">0/0</span>
+                    </div>
+                    <div class="global-cards-row" id="row-a-buff"></div>
+
+                    <div class="global-section-title">
+                        <span id="label-a-debuff">本队 Debuff</span>
+                        <span class="req-badge" id="badge-a-debuff">0/0</span>
+                    </div>
+                    <div class="global-cards-row" id="row-a-debuff"></div>
+                </div>
+
+                <div class="global-team-panel b">
+                    <div class="team-header">Team Bravo (Global)</div>
+                    <div class="global-section-title">
+                        <span id="label-b-buff">全局 Buff</span>
+                        <span class="req-badge" id="badge-b-buff">0/0</span>
+                    </div>
+                    <div class="global-cards-row" id="row-b-buff"></div>
+
+                    <div class="global-section-title">
+                        <span id="label-b-debuff">本队 Debuff</span>
+                        <span class="req-badge" id="badge-b-debuff">0/0</span>
+                    </div>
+                    <div class="global-cards-row" id="row-b-debuff"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="phase-units" class="game-phase">
+            <div class="arena">
+                <div class="team-col team-a" id="col-a">
+                    <div class="team-header">Team Alpha Units</div>
+                    <div id="roster-a"></div>
+                </div>
+
+                <div class="team-col team-b" id="col-b">
+                    <div class="team-header">Team Bravo Units</div>
+                    <div id="roster-b"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Configuration ---
+        const UNIT_CATEGORIES = ['recon', 'infantry', 'tank', 'support', 'helo', 'air'];
+        
+        // --- State ---
+        let RAW_DATA = {};
+        // POOLS now separated by category
+        let POOLS = {
+            buffs: [],
+            debuffs: [],
+            byCategory: {
+                recon: [], infantry: [], tank: [], support: [], helo: [], air: []
+            }
+        };
+        
+        let GLOBAL_CONFIG = { buff: {roll:3, pick:1}, debuff: {roll:3, pick:2} };
+        let GLOBAL_SELECTIONS = {
+            a: { buffs: new Set(), debuffs: new Set() },
+            b: { buffs: new Set(), debuffs: new Set() }
+        };
+        
+        let PLAYER_DATA = { a: [], b: [] };
+        let PICK_SETTINGS = { roll: 3, pick: 2 }; 
+        // --- token你拿去也没用，因为我已经限制死了
+        const AI_API_KEY = "sk-PFqiLSA0iusyRDuYAe74CfFdD0D0457094176d6b2451Ee57";
+        const AI_BASE_URL = "https://aihubmix.com/v1/chat/completions";
+
+        // --- DOM Elements ---
+        const dom = {
+            fileInput: document.getElementById('fileInput'),
+            status: document.getElementById('status-bar'),
+            tooltip: document.getElementById('tooltip'),
+            
+            // Phase Containers
+            globalControls: document.getElementById('global-controls'),
+            unitControls: document.getElementById('unit-controls'),
+            phaseGlobal: document.getElementById('phase-global'),
+            phaseUnits: document.getElementById('phase-units'),
+            
+            // Buttons
+            btnStartGlobal: document.getElementById('btn-start-global'),
+            btnConfirmGlobal: document.getElementById('btn-confirm-global'),
+            btnRollUnits: document.getElementById('btn-roll-units'),
+            btnShowdown: document.getElementById('btn-showdown'),
+            btnRestart: document.getElementById('btn-restart'),
+            
+            // Inputs
+            selBuffRoll: document.getElementById('buffRollSelect'),
+            selBuffPick: document.getElementById('buffPickSelect'),
+            selDebuffRoll: document.getElementById('debuffRollSelect'),
+            selDebuffPick: document.getElementById('debuffPickSelect'),
+            selRoll: document.getElementById('rollCountSelect'),
+            selPick: document.getElementById('pickCountSelect'),
+            selPlayerCount: document.getElementById('playerCountSelect'),
+
+            // Containers
+            rosterA: document.getElementById('roster-a'),
+            rosterB: document.getElementById('roster-b'),
+            rowABuff: document.getElementById('row-a-buff'),
+            rowADebuff: document.getElementById('row-a-debuff'),
+            rowBBuff: document.getElementById('row-b-buff'),
+            rowBDebuff: document.getElementById('row-b-debuff'),
+            badgeABuff: document.getElementById('badge-a-buff'),
+            badgeADebuff: document.getElementById('badge-a-debuff'),
+            badgeBBuff: document.getElementById('badge-b-buff'),
+            badgeBDebuff: document.getElementById('badge-b-debuff')
+        };
+
+        /* --- 1. Init --- */
+        
+        // 1.1 手动文件上传逻辑
+        dom.fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                try {
+                    RAW_DATA = JSON.parse(evt.target.result);
+                    processData(RAW_DATA);
+                    dom.status.textContent = `数据加载成功: ${file.name}`;
+                } catch (err) {
+                    console.error(err);
+                    alert("JSON 格式错误");
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        // 1.2 数据处理和初始化函数
+        function processData(data) {
+            if (!data.global_buffs || !data.global_debuffs) {
+                alert("JSON 缺少 global_buffs 或 global_debuffs 字段！");
+                return;
+            }
+
+            // Process Global Pools
+            POOLS.buffs = data.global_buffs.map(c => ({...c, type: 'buff', uid: Math.random(), author: c.author || '未知'}));
+            POOLS.debuffs = data.global_debuffs.map(c => ({...c, type: 'debuff', uid: Math.random(), author: c.author || '未知'}));
+
+            // Process Unit Pools by Category
+            let totalUnits = 0;
+            UNIT_CATEGORIES.forEach(cat => {
+                POOLS.byCategory[cat] = []; // Clear
+                if (data[cat] && Array.isArray(data[cat])) {
+                    data[cat].forEach(card => {
+                        POOLS.byCategory[cat].push({
+                            ...card,
+                            type: 'unit',
+                            category: cat,
+                            uid: Math.random(),
+                            author: card.author || '未知'
+                        });
+                        totalUnits++;
+                    });
+                }
+            });
+
+            if (totalUnits < 20) {
+                dom.status.textContent = `警告：部队池过小 (${totalUnits} 张)`;
+            } else {
+                dom.status.textContent = `数据加载完毕! Buff:${POOLS.buffs.length}, Debuff:${POOLS.debuffs.length}, Units:${totalUnits}`;
+            }
+
+            // dom.fileInput.parentElement.style.display = 'none'; // 成功加载后在 autoLoad 中统一处理
+            dom.globalControls.style.display = 'flex';
+            dom.btnRestart.style.display = 'block'; // Show Restart button
+        }
+        
+        // 1.3 新增：尝试从当前目录自动加载 JSON
+        async function attemptAutoLoad(filename = 'quffs.json') {
+            dom.status.textContent = `尝试自动加载 ${filename}...`;
+            try {
+                // 使用 fetch 尝试从运行该 HTML 文件的位置加载 JSON
+                const response = await fetch(filename);
+                
+                // 检查 HTTP 状态码，如果找不到文件 (e.g., 404)
+                if (!response.ok) {
+                    throw new Error(`文件 ${filename} 未找到或加载失败 (状态码: ${response.status})`);
+                }
+                
+                const data = await response.json();
+                RAW_DATA = data;
+                processData(RAW_DATA);
+                
+                // 成功加载后，隐藏上传按钮，并显示状态
+                dom.fileInput.parentElement.style.display = 'none';
+                dom.status.textContent = `自动加载成功: ${filename}`;
+
+            } catch (error) {
+                console.warn(error.message);
+                // 自动加载失败，显示上传按钮，让用户手动操作
+                dom.fileInput.parentElement.style.display = 'flex'; 
+                dom.status.textContent = `未能自动加载 ${filename}。请手动点击 📂 加载 JSON`;
+            }
+        }
+
+        /* --- 2. Global Phase --- */
+        dom.btnStartGlobal.addEventListener('click', () => {
+            const br = parseInt(dom.selBuffRoll.value);
+            const bp = parseInt(dom.selBuffPick.value);
+            const dr = parseInt(dom.selDebuffRoll.value);
+            const dp = parseInt(dom.selDebuffPick.value);
+
+            if (br < bp || dr < dp) {
+                alert("Roll 数必须大于等于 Pick 数");
+                return;
+            }
+
+            GLOBAL_CONFIG = { buff: {roll: br, pick: bp}, debuff: {roll: dr, pick: dp} };
+
+            // 重置已选数据 (Allow Re-roll)
+            GLOBAL_SELECTIONS = {
+                a: { buffs: new Set(), debuffs: new Set() },
+                b: { buffs: new Set(), debuffs: new Set() }
+            };
+
+            ['a', 'b'].forEach(t => {
+                document.getElementById(`label-${t}-buff`).textContent = `全局 Buff (${br}选${bp})`;
+                document.getElementById(`label-${t}-debuff`).textContent = `本队 Debuff (${dr}选${dp})`;
+            });
+
+            // 按钮不再消失，变成“重新抽取”
+            dom.btnStartGlobal.textContent = "🔄 重新抽取全局";
+            dom.phaseGlobal.classList.add('active');
+            
+            renderGlobalSection('a');
+            renderGlobalSection('b');
+            
+            dom.status.textContent = "阶段一：请点击卡牌进行选择（可点击上方按钮重Roll）";
+            updateGlobalStatus();
+        });
+
+        function renderGlobalSection(team) {
+            const buffs = getRandom(POOLS.buffs, GLOBAL_CONFIG.buff.roll);
+            renderCards(buffs, team === 'a' ? dom.rowABuff : dom.rowBBuff, team, 'buff');
+
+            const debuffs = getRandom(POOLS.debuffs, GLOBAL_CONFIG.debuff.roll);
+            renderCards(debuffs, team === 'a' ? dom.rowADebuff : dom.rowBDebuff, team, 'debuff');
+        }
+
+        function renderCards(cards, container, team, type) {
+            container.innerHTML = '';
+            cards.forEach((card, index) => {
+                const el = createCardElement(card);
+                el.addEventListener('click', () => toggleGlobalSelection(el, card, team, type));
+                container.appendChild(el);
+                setTimeout(() => el.classList.add('dealt'), index * 80);
+            });
+        }
+
+        function toggleGlobalSelection(el, card, team, type) {
+            const set = GLOBAL_SELECTIONS[team][type + 's'];
+            const limit = GLOBAL_CONFIG[type].pick;
+
+            if (set.has(card.uid)) {
+                set.delete(card.uid);
+                el.classList.remove('selected');
+            } else {
+                if (set.size >= limit) {
+                    el.animate([{ transform: 'translateX(-4px)' }, { transform: 'translateX(4px)' }, { transform: 'translateX(0)' }], { duration: 200 });
+                    return;
+                }
+                set.add(card.uid);
+                el.classList.add('selected');
+            }
+            updateGlobalStatus();
+        }
+
+        function updateGlobalStatus() {
+            const aBuff = GLOBAL_SELECTIONS.a.buffs.size;
+            const aDebuff = GLOBAL_SELECTIONS.a.debuffs.size;
+            const bBuff = GLOBAL_SELECTIONS.b.buffs.size;
+            const bDebuff = GLOBAL_SELECTIONS.b.debuffs.size;
+
+            const maxBuff = GLOBAL_CONFIG.buff.pick;
+            const maxDebuff = GLOBAL_CONFIG.debuff.pick;
+
+            updateBadge(dom.badgeABuff, aBuff, maxBuff);
+            updateBadge(dom.badgeADebuff, aDebuff, maxDebuff);
+            updateBadge(dom.badgeBBuff, bBuff, maxBuff);
+            updateBadge(dom.badgeBDebuff, bDebuff, maxDebuff);
+
+            if (aBuff===maxBuff && aDebuff===maxDebuff && bBuff===maxBuff && bDebuff===maxDebuff) {
+                dom.btnConfirmGlobal.style.display = 'flex';
+                dom.status.textContent = "全局选择完成，请确认进入下一阶段";
+                dom.status.style.color = 'var(--gold)';
+            } else {
+                dom.btnConfirmGlobal.style.display = 'none';
+                dom.status.style.color = '#c5c6c7';
+            }
+        }
+
+        function updateBadge(el, current, max) {
+            el.textContent = `${current}/${max}`;
+            if (current === max) el.classList.add('valid');
+            else el.classList.remove('valid');
+        }
+
+        dom.btnConfirmGlobal.addEventListener('click', () => {
+            dom.btnConfirmGlobal.style.display = 'none';
+            dom.globalControls.style.display = 'none'; // Hide Global controls to simplify bar
+            dom.unitControls.style.display = 'flex';
+            dom.phaseUnits.classList.add('active');
+            dom.status.textContent = "阶段二：配置对战人数，生成部队";
+            dom.status.style.color = '#66fcf1';
+            setTimeout(() => dom.phaseUnits.scrollIntoView({behavior: 'smooth', block: 'start'}), 100);
+        });
+
+        /* --- 3. Unit Phase (FIXED LOGIC) --- */
+        dom.btnRollUnits.addEventListener('click', () => {
+            const rollCount = parseInt(dom.selRoll.value);
+            const pickCount = parseInt(dom.selPick.value);
+            const playersPerTeam = parseInt(dom.selPlayerCount.value);
+
+            if (rollCount < pickCount) {
+                alert("Roll 数必须大于等于 Pick 数");
+                return;
+            }
+            if (rollCount > UNIT_CATEGORIES.length) {
+                 alert(`Roll 数 (${rollCount}) 不能超过现有兵种栏目总数 (${UNIT_CATEGORIES.length})`);
+                 return;
+            }
+
+            PICK_SETTINGS = { roll: rollCount, pick: pickCount };
+
+            let currentDeck = {};
+            UNIT_CATEGORIES.forEach(cat => {
+                currentDeck[cat] = [...POOLS.byCategory[cat]].sort(() => 0.5 - Math.random());
+            });
+
+            let errorMsg = null;
+
+            ['a', 'b'].forEach(team => {
+                PLAYER_DATA[team] = [];
+                for (let i=0; i<playersPerTeam; i++) {
+                    let availableCats = [...UNIT_CATEGORIES].sort(() => 0.5 - Math.random());
+                    let selectedCats = availableCats.slice(0, rollCount);
+                    let hand = [];
+                    
+                    selectedCats.forEach(cat => {
+                        if (currentDeck[cat].length > 0) {
+                            hand.push(currentDeck[cat].pop());
+                        } else {
+                            errorMsg = `错误：${cat} 栏目卡牌不足！请补充 JSON 数据。`;
+                        }
+                    });
+
+                    PLAYER_DATA[team].push({
+                        id: `${team}${i}`,
+                        hand: hand,
+                        picks: new Set()
+                    });
+                }
+            });
+
+            if (errorMsg) {
+                alert(errorMsg);
+                return;
+            }
+
+            renderPlayerRosters();
+            dom.btnRollUnits.textContent = "🔄 重新 Roll 点";
+            dom.status.textContent = "请各队员点击卡牌进行选择";
+            checkUnitReadiness();
+        });
+
+        function renderPlayerRosters() {
+            ['a', 'b'].forEach(team => {
+                const container = team === 'a' ? dom.rosterA : dom.rosterB;
+                container.innerHTML = '';
+
+                PLAYER_DATA[team].forEach((p, idx) => {
+                    const panel = document.createElement('div');
+                    panel.className = 'player-panel';
+                    
+                    const meta = document.createElement('div');
+                    meta.className = 'player-meta';
+                    meta.innerHTML = `<div class="player-id">${team.toUpperCase()}${idx+1}</div><div class="pick-counter" id="cnt-${team}-${idx}">0/${PICK_SETTINGS.pick}</div>`;
+                    
+                    const aiLabel = document.createElement('div');
+                    aiLabel.className = 'ai-combo-name';
+                    aiLabel.id = `ai-${team}-${idx}`;
+
+                    const handDiv = document.createElement('div');
+                    handDiv.className = 'hand-container';
+
+                    p.hand.forEach((card, cIdx) => {
+                        const cardEl = createCardElement(card);
+                        cardEl.dataset.uid = card.uid;
+                        cardEl.addEventListener('click', () => handleUnitPick(team, idx, card.uid, cardEl));
+                        handDiv.appendChild(cardEl);
+                        
+                        setTimeout(() => {
+                            cardEl.classList.add('dealt');
+                        }, (idx * 50) + (cIdx * 50)); 
+                    });
+
+                    panel.appendChild(meta);
+                    panel.appendChild(aiLabel);
+                    panel.appendChild(handDiv);
+                    container.appendChild(panel);
+                });
+            });
+        }
+
+        function handleUnitPick(team, pIdx, uid, el) {
+            const player = PLAYER_DATA[team][pIdx];
+            
+            if (player.picks.has(uid)) {
+                player.picks.delete(uid);
+                el.classList.remove('selected');
+            } else {
+                if (player.picks.size >= PICK_SETTINGS.pick) {
+                    el.animate([
+                         { transform: 'translateX(-4px)' },
+                         { transform: 'translateX(4px)' },
+                         { transform: 'translateX(0)' }
+                    ], { duration: 150 });
+                    return;
+                }
+                player.picks.add(uid);
+                el.classList.add('selected');
+            }
+
+            const cnt = document.getElementById(`cnt-${team}-${pIdx}`);
+            cnt.textContent = `${player.picks.size}/${PICK_SETTINGS.pick}`;
+            cnt.classList.toggle('done', player.picks.size === PICK_SETTINGS.pick);
+
+            checkUnitReadiness();
+        }
+
+        function checkUnitReadiness() {
+            let pending = false;
+            ['a', 'b'].forEach(t => {
+                PLAYER_DATA[t].forEach(p => {
+                    if (p.picks.size < PICK_SETTINGS.pick) pending = true;
+                });
+            });
+
+            if (!pending && PLAYER_DATA.a.length > 0) {
+                dom.btnShowdown.style.display = 'flex';
+                dom.status.textContent = "全员就绪！点击进入最终决战";
+                dom.status.style.color = 'var(--gold)';
+            } else {
+                dom.btnShowdown.style.display = 'none';
+                dom.status.textContent = "等待队员选择...";
+                dom.status.style.color = '#c5c6c7';
+            }
+        }
+
+        /* --- 4. Showdown --- */
+        dom.btnShowdown.addEventListener('click', () => {
+            document.body.classList.add('mode-showdown');
+            dom.unitControls.style.display = 'none';
+            dom.status.textContent = "⚔️ BATTLE PHASE ⚔️";
+            //triggerAIGeneration();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        /* --- 5. Restart --- */
+        dom.btnRestart.addEventListener('click', () => {
+            if(!confirm("确定要重新开始吗？当前进度将丢失（JSON文件不需要重新上传）。")) return;
+            
+            // Reset UI
+            document.body.classList.remove('mode-showdown');
+            dom.phaseGlobal.classList.remove('active');
+            dom.phaseUnits.classList.remove('active');
+            
+            // Reset Controls
+            dom.globalControls.style.display = 'flex';
+            dom.unitControls.style.display = 'none';
+            dom.btnConfirmGlobal.style.display = 'none';
+            dom.btnShowdown.style.display = 'none';
+            dom.btnStartGlobal.textContent = "1️⃣ 抽取全局词条";
+
+            // Clear Containers
+            dom.rowABuff.innerHTML = ''; dom.rowADebuff.innerHTML = '';
+            dom.rowBBuff.innerHTML = ''; dom.rowBDebuff.innerHTML = '';
+            dom.rosterA.innerHTML = ''; dom.rosterB.innerHTML = '';
+
+            // Reset Badges
+            updateBadge(dom.badgeABuff, 0, 0); updateBadge(dom.badgeADebuff, 0, 0);
+            updateBadge(dom.badgeBBuff, 0, 0); updateBadge(dom.badgeBDebuff, 0, 0);
+
+            // Reset State Variables
+            GLOBAL_SELECTIONS = { a: { buffs: new Set(), debuffs: new Set() }, b: { buffs: new Set(), debuffs: new Set() } };
+            PLAYER_DATA = { a: [], b: [] };
+            
+            dom.status.textContent = "已重置。阶段一：请抽取全局词条";
+            dom.status.style.color = '#c5c6c7';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        /* --- Helpers --- */
+        function createCardElement(card) {
+            const el = document.createElement('div');
+            el.className = `card type-${card.type}`;
+            const tagClass = card.category ? `tag-${card.category}` : '';
+            
+            el.innerHTML = `
+                <div class="card-title">${card.title || '未知'}</div>
+                <div class="card-desc">${card.content || '...'}</div>
+                ${card.category ? `<div class="card-tag ${tagClass}">${card.category}</div>` : ''}
+            `;
+            el.addEventListener('mouseenter', (e) => showTooltip(e, card));
+            el.addEventListener('mousemove', moveTooltip);
+            el.addEventListener('mouseleave', hideTooltip);
+            return el;
+        }
+
+        function getRandom(arr, n) {
+            const shuffled = [...arr].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, n);
+        }
+
+        function showTooltip(e, card) {
+            dom.tooltip.innerHTML = `
+                <h4>${card.title}</h4>
+                <p>${card.content}</p>
+                <div class="tooltip-author">© ${card.author || '未知作者'}</div>
+            `;
+            dom.tooltip.classList.add('visible');
+            moveTooltip(e);
+        }
+        function moveTooltip(e) {
+            const x = e.clientX + 20;
+            const y = e.clientY + 20;
+            const rect = dom.tooltip.getBoundingClientRect();
+            let left = x;
+            let top = y;
+            if (x + rect.width > window.innerWidth) left = e.clientX - rect.width - 20;
+            if (y + rect.height > window.innerHeight) top = e.clientY - rect.height - 20;
+            dom.tooltip.style.left = left + 'px';
+            dom.tooltip.style.top = top + 'px';
+        }
+        function hideTooltip() { dom.tooltip.classList.remove('visible'); }
+
+        async function triggerAIGeneration() {
+            ['a', 'b'].forEach(team => {
+                PLAYER_DATA[team].forEach(async (player, idx) => {
+                    const titles = [];
+                    player.hand.forEach(c => {
+                        if (player.picks.has(c.uid)) titles.push(c.title);
+                    });
+                    if (titles.length === 0) return;
+                    const name = await fetchAIName(titles);
+                    if (name) {
+                        const label = document.getElementById(`ai-${team}-${idx}`);
+                        label.textContent = name;
+                        label.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        async function fetchAIName(titles) {
+            const prompt = `现有卡牌技能：[${titles.join(',')}]。请起一个霸气或搞笑的中二组合名（4-6字）。只返回名字。`;
+            try {
+                const res = await fetch(AI_BASE_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${AI_API_KEY}` },
+                    body: JSON.stringify({
+                        model: "gpt-4.1-mini",
+                        messages: [{"role":"user", "content": prompt}],
+                        max_tokens: 15,
+                        temperature: 0.8
+                    })
+                });
+                const data = await res.json();
+                return data.choices?.[0]?.message?.content?.replace(/["'。]/g, '').trim() || null;
+            } catch (e) {
+                console.error("AI Error", e);
+                return null;
+            }
+        }
+        
+        // -------------------------------------------------------------
+        // NEW: 页面加载完成后，尝试自动加载 deck(改).json
+        // -------------------------------------------------------------
+        document.addEventListener('DOMContentLoaded', () => {
+             attemptAutoLoad('quffs.json');
+        });
+        
+    </script>
+</body>
+</html>
+
+
